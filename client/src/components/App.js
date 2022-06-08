@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+
+import useLocalStorage from '../hooks/useLocalStorage';
 import '../styles/App.css';
 import Login from './Login';
 
 function App() {
-  const [id, setId] = useState()
+  const [id, setId] = useLocalStorage('username')
 
   return (
     <>
-      {id}
-      <Login onIdSubmit={setId} />
+      {id ? <h1>hello</h1>: <Login onIdSubmit={setId} />}
     </>
   );
 }
