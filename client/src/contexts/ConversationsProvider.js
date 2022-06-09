@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { useContacts } from './ContactsProvider'
+import arrayEquality from '../hooks/arrayEquality'
 
 const ConversationsContex = React.createContext()
 
@@ -60,8 +61,18 @@ export function ConversationsProvider({ id, children }) {
       const name = (contact && contact.name) || recipient
       return { id: recipient, name }
     })
+    const messages = conversation.messages.map(message => {
+      const contact = contacts.find(contact => {
+        return contact.id === message.sender
+      })
+      const name = (contact && contact.name) || message.sender
+      const fromMe = id === message.sender
+      return { ...message, senderName: name, fromMe }
+    })
+
+
     const selected = index === selectConversationIndex
-    return { ...conversation, recipients, selected }
+    return { ...conversation, messages, recipients, selected }
   })
 
   const value = {
@@ -79,13 +90,13 @@ export function ConversationsProvider({ id, children }) {
   )
 }
 
-const arrayEquality = (a, b) => {
-  if (a.length !== b.length) return false
+// const arrayEquality = (a, b) => {
+//   if (a.length !== b.length) return false
 
-  a.sort()
-  b.sort()
+//   a.sort()
+//   b.sort()
 
-  return a.every((element, index) => {
-    return element === b[index]
-  })
-}
+//   return a.every((element, index) => {
+//     return element === b[index]
+//   })
+// }
