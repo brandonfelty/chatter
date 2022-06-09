@@ -21,7 +21,30 @@ export function ConversationsProvider({ id, children }) {
   }
 
   const addMessageToConversation = ({ recipients, text, sender }) => {
+    setConversations(prevConversations => {
+      let madeChange = false
+      const newMessage = { sender, text }
+      const newConversations = prevConversations.map(
+        conversation => {
+          if (arrayEquality(conversation.recipients, recipients)) {
+            madeChange = true
+            return {
+              ...conversation,
+              messages: [...conversation.messages, newMessage]
+            }
+          }
+          return conversation
+        }
+      )
 
+      if (madeChange) {
+        return newConversations
+      } else {
+        return [
+          ...prevConversations,
+          { recipients, messages: [newMessage] }]
+      }
+    })
   }
 
   const sendMessage = (recipients, text) => {
@@ -54,4 +77,15 @@ export function ConversationsProvider({ id, children }) {
       {children}
     </ConversationsContex.Provider>
   )
+}
+
+const arrayEquality = (a, b) => {
+  if (a.length !== b.length) return false
+
+  a.sort()
+  b.sort()
+
+  return a.every((element, index) => {
+    return element === b[index]
+  })
 }
